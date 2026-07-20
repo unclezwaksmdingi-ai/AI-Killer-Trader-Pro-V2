@@ -3,11 +3,11 @@ import requests
 
 app = Flask(__name__)
 
-NTFY_TOPIC = "killer-trader-signals"
 
-@app.route("/")
+@app.get("/")
 def home():
-    return jsonify({"status": "AI Killer Trader Pro V2 Online"})
+    send_signal("🚀 AI Killer Trader Pro is now online!")
+    return {"status": "AI Killer Trader Pro Online"}
 
 @app.route("/signal")
 def signal():
@@ -25,3 +25,15 @@ def signal():
     )
 
     return jsonify(data)
+import os
+import requests
+
+NTFY_TOPIC = os.getenv("NTFY_TOPIC")
+NTFY_SERVER = os.getenv("NTFY_SERVER", "https://ntfy.sh")
+
+def send_signal(message):
+    if NTFY_TOPIC:
+        requests.post(
+            f"{NTFY_SERVER}/{NTFY_TOPIC}",
+            data=message.encode("utf-8")
+        )
